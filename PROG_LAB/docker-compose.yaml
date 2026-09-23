@@ -1,0 +1,34 @@
+
+services:
+  backend:
+    build: 
+      context: ./backend
+    container_name: minerva-backend
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./backend/src:/app/src
+      - ./gs_data:/app/gs_data
+    networks:
+      - app-network
+
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: minerva-frontend
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/templates:/app/templates
+      - ./gs_data:/app/gs_data # Fondamentale per il menù a tendina!
+    environment:
+      - BACKEND_URL=http://backend:8003 # Dice al frontend dove trovare le API
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
